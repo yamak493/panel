@@ -43,6 +43,7 @@ class IssueInitialAdminApiKeyCommand extends Command
 
         $adminUser = User::query()
             ->whereHas('roles', fn ($query) => $query->where('name', Role::ROOT_ADMIN))
+            ->orderBy('id')
             ->first();
         if (!$adminUser) {
             $this->line('No root admin user found yet, skipping initial admin API key generation.');
@@ -98,7 +99,7 @@ class IssueInitialAdminApiKeyCommand extends Command
     {
         try {
             File::ensureDirectoryExists(dirname($markerPath));
-            File::put($markerPath, now()->toIso8601String());
+            File::put($markerPath, 'issued');
         } catch (Exception $exception) {
             $this->warn('Could not persist API key marker file: ' . $exception->getMessage());
         }

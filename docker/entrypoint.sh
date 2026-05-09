@@ -62,7 +62,9 @@ if [ "${APP_INSTALLED}" = "true" ];  then
 
   php artisan p:plugin:composer
 
-  php artisan p:docker:issue-initial-admin-api-key || true
+  if ! php artisan p:docker:issue-initial-admin-api-key; then
+    echo "Warning: failed to issue Docker initial admin API key."
+  fi
 fi
 
 echo "Optimizing Filament"
