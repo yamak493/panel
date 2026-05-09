@@ -58,7 +58,7 @@ class IssueInitialAdminApiKeyCommand extends Command
             ->first();
 
         if ($existingKey) {
-            $this->line('Initial admin API key already exists, marking as issued and skipping.');
+            $this->line('Initial admin API key already exists, marking as issued and skipping (existing key value cannot be recovered).');
             $this->markAsIssued($markerPath);
 
             return 0;
@@ -88,6 +88,7 @@ class IssueInitialAdminApiKeyCommand extends Command
         $this->line(' Initial admin API key has been generated.');
         $this->line(' This key has full admin read/write permissions.');
         $this->line(' Save this key now. It will not be shown again.');
+        $this->line(' Warning: console logs can expose this key if logs are shared.');
         $this->line(' KEY: ' . $key->identifier . $key->token);
         $this->line('==============================================');
         $this->newLine();
