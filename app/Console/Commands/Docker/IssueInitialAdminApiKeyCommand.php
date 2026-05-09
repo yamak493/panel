@@ -101,7 +101,7 @@ class IssueInitialAdminApiKeyCommand extends Command
             File::ensureDirectoryExists(dirname($markerPath));
             File::put($markerPath, 'issued');
         } catch (Exception $exception) {
-            $this->warn('Could not persist API key marker file: ' . $exception->getMessage());
+            $this->warn('Could not persist API key marker file; another key generation attempt may happen on next restart: ' . $exception->getMessage());
         }
     }
 }
