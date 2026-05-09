@@ -17,8 +17,6 @@ class IssueInitialAdminApiKeyCommand extends Command
 
     protected $description = 'Issues a one-time full-permission admin application API key for Docker-based first installs.';
 
-    private const DEFAULT_MARKER_PATH = '/pelican-data/.initial-admin-api-key-issued';
-
     private const DEFAULT_KEY_MEMO = 'Initial Docker admin API key';
 
     public function __construct(private readonly KeyCreationService $keyCreationService)
@@ -34,7 +32,7 @@ class IssueInitialAdminApiKeyCommand extends Command
             return 0;
         }
 
-        $markerPath = config('panel.docker.initial_admin_api_key_marker_path', self::DEFAULT_MARKER_PATH);
+        $markerPath = config('panel.docker.initial_admin_api_key_marker_path', '/pelican-data/.initial-admin-api-key-issued');
         if (File::exists($markerPath)) {
             $this->line('Initial admin API key has already been issued, skipping.');
 
@@ -87,9 +85,13 @@ class IssueInitialAdminApiKeyCommand extends Command
         $this->line('==============================================');
         $this->line(' Initial admin API key has been generated.');
         $this->line(' This key has full admin read/write permissions.');
-        $this->line(' Save this key now. It will not be shown again.');
-        $this->line(' Warning: console logs can expose this key if logs are shared.');
-        $this->line(' KEY: ' . $key->identifier . $key->token);
+        if (config('panel.docker.initial_admin_api_key_output', true)) {
+            $this->line(' Save this key now. It will not be shown again.');
+            $this->line(' Warning: console logs can expose this key if logs are shared.');
+            $this->line(' KEY: ' . $key->identifier . $key->token);
+        } else {
+            $this->line(' API key output is disabled by configuration.');
+        }
         $this->line('==============================================');
         $this->newLine();
 

@@ -86,5 +86,6 @@ return [
 
     'docker' => [
         'initial_admin_api_key_marker_path' => env('PANEL_DOCKER_INITIAL_ADMIN_API_KEY_MARKER_PATH', '/pelican-data/.initial-admin-api-key-issued'),
+        'initial_admin_api_key_output' => env('PANEL_DOCKER_INITIAL_ADMIN_API_KEY_OUTPUT', true),
     ],
 ];
