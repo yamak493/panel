@@ -36,6 +36,8 @@ class IssueInitialAdminApiKeyCommand extends Command
 
         $markerPath = config('panel.docker.initial_admin_api_key_marker_path', self::DEFAULT_MARKER_PATH);
         if (File::exists($markerPath)) {
+            $this->line('Initial admin API key has already been issued, skipping.');
+
             return 0;
         }
 
@@ -55,6 +57,7 @@ class IssueInitialAdminApiKeyCommand extends Command
             ->first();
 
         if ($existingKey) {
+            $this->line('Initial admin API key already exists, marking as issued and skipping.');
             $this->markAsIssued($markerPath);
 
             return 0;
