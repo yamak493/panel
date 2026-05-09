@@ -32,7 +32,13 @@ class IssueInitialAdminApiKeyCommand extends Command
             return 0;
         }
 
-        $markerPath = config('panel.docker.initial_admin_api_key_marker_path', '/pelican-data/.initial-admin-api-key-issued');
+        $markerPath = config('panel.docker.initial_admin_api_key_marker_path');
+        if (!is_string($markerPath) || $markerPath === '') {
+            $this->error('Invalid Docker API key marker path configuration.');
+
+            return 1;
+        }
+
         if (File::exists($markerPath)) {
             $this->line('Initial admin API key has already been issued, skipping.');
 
@@ -56,7 +62,7 @@ class IssueInitialAdminApiKeyCommand extends Command
             ->first();
 
         if ($existingKey) {
-            $this->line('Initial admin API key already exists, marking as issued and skipping (existing key value cannot be recovered).');
+            $this->line('Initial admin API key already exists but marker file is missing. Creating marker to prevent duplicate generation (existing key value cannot be recovered).');
             $this->markAsIssued($markerPath);
 
             return 0;
@@ -85,7 +91,7 @@ class IssueInitialAdminApiKeyCommand extends Command
         $this->line('==============================================');
         $this->line(' Initial admin API key has been generated.');
         $this->line(' This key has full admin read/write permissions.');
-        if (config('panel.docker.initial_admin_api_key_output', true)) {
+        if (config('panel.docker.initial_admin_api_key_output')) {
             $this->line(' Save this key now. It will not be shown again.');
             $this->line(' Warning: console logs can expose this key if logs are shared.');
             $this->line(' KEY: ' . $key->identifier . $key->token);
