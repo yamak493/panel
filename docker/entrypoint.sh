@@ -61,6 +61,10 @@ if [ "${APP_INSTALLED}" = "true" ];  then
   php artisan migrate --force
 
   php artisan p:plugin:composer
+
+  if ! php artisan p:docker:issue-initial-admin-api-key; then
+    echo "Warning: failed to issue Docker initial admin API key."
+  fi
 fi
 
 echo "Optimizing Filament"
