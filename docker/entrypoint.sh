@@ -61,6 +61,8 @@ if [ "${APP_INSTALLED}" = "true" ];  then
   php artisan migrate --force
 
   php artisan p:plugin:composer
+
+  php artisan p:docker:issue-initial-admin-api-key || true
 fi
 
 echo "Optimizing Filament"
