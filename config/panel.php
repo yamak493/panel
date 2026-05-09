@@ -83,4 +83,8 @@ return [
         'dev_mode' => env('PANEL_PLUGIN_DEV_MODE', false),
         'max_import_size' => env('PANEL_PLUGIN_MAX_IMPORT_SIZE', 1024 * 1024 * 100),
     ],
+
+    'docker' => [
+        'initial_admin_api_key_marker_path' => env('PANEL_DOCKER_INITIAL_ADMIN_API_KEY_MARKER_PATH', '/pelican-data/.initial-admin-api-key-issued'),
+    ],
 ];

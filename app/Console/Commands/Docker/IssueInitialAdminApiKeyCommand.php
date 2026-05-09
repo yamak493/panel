@@ -3,6 +3,7 @@
 namespace App\Console\Commands\Docker;
 
 use App\Models\ApiKey;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\Acl\Api\AdminAcl;
 use App\Services\Api\KeyCreationService;
@@ -14,7 +15,7 @@ class IssueInitialAdminApiKeyCommand extends Command
 {
     protected $signature = 'p:docker:issue-initial-admin-api-key';
 
-    protected $description = 'Issues a one-time admin application API key for Docker-based first installs.';
+    protected $description = 'Issues a one-time full-permission admin application API key for Docker-based first installs.';
 
     private const DEFAULT_MARKER_PATH = '/pelican-data/.initial-admin-api-key-issued';
 
@@ -28,15 +29,19 @@ class IssueInitialAdminApiKeyCommand extends Command
     public function handle(): int
     {
         if (!config('app.installed')) {
+            $this->line('Panel is not installed yet, skipping initial admin API key generation.');
+
             return 0;
         }
 
-        $markerPath = env('INITIAL_ADMIN_API_KEY_MARKER', self::DEFAULT_MARKER_PATH);
+        $markerPath = config('panel.docker.initial_admin_api_key_marker_path', self::DEFAULT_MARKER_PATH);
         if (File::exists($markerPath)) {
             return 0;
         }
 
-        $adminUser = User::query()->get()->first(fn (User $user) => $user->isRootAdmin());
+        $adminUser = User::query()
+            ->whereHas('roles', fn ($query) => $query->where('name', Role::ROOT_ADMIN))
+            ->first();
         if (!$adminUser) {
             $this->line('No root admin user found yet, skipping initial admin API key generation.');
 
@@ -77,6 +82,7 @@ class IssueInitialAdminApiKeyCommand extends Command
         $this->newLine();
         $this->line('==============================================');
         $this->line(' Initial admin API key has been generated.');
+        $this->line(' This key has full admin read/write permissions.');
         $this->line(' Save this key now. It will not be shown again.');
         $this->line(' KEY: ' . $key->identifier . $key->token);
         $this->line('==============================================');
